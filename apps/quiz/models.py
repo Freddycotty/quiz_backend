@@ -1,5 +1,4 @@
 from django.db import models
-from django.forms import BooleanField
 from apps.usuario.models import Usuarios
 # Create your models here.
 class Quiz(models.Model):
@@ -27,7 +26,7 @@ class Preguntas(models.Model):
   class Meta:
     verbose_name = 'pregunta'
     verbose_name_plural = 'preguntas'
-    ordering = ['-posicion']
+    ordering = ['posicion']
     db_table = 'preguntas'
     
     def __str__(self) -> str:
@@ -36,7 +35,7 @@ class Preguntas(models.Model):
 class Respuestas(models.Model):
   detalle = models.CharField(max_length=250, unique=False, blank=False, null=False)
   verdadero = models.BooleanField()
-  pregunta = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='respuesta_pregunta', null = True)
+  pregunta = models.ForeignKey(Preguntas, on_delete=models.CASCADE,related_name='respuesta_pregunta', null = True)
   
   class Meta:
     verbose_name = 'respuesta'
@@ -48,10 +47,12 @@ class Respuestas(models.Model):
     return str(self.detalle) or ""
 
 class Elecciones(models.Model):
-  usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE,related_name='eleccion_usuario', null = False, blank=False)
-  respuesta = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='eleccion_respuesta', null = True)
-  respondido = models.BooleanField()
-  
+  usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE,related_name='eleccion_usuario', null = True, blank=True)
+  pregunta = models.ForeignKey(Preguntas, on_delete=models.CASCADE,related_name='eleccion_pregunta', null = True)
+  respuesta = models.ForeignKey(Respuestas, on_delete=models.CASCADE,related_name='eleccion_respuesta', null = True)
+  quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='eleccion_quiz', null = True)
+  respondido = models.BooleanField(null = False)
+  puntaje = models.DecimalField(max_digits=10, decimal_places=1, null = True, blank= True)
   class Meta:
     verbose_name = 'eleccion'
     verbose_name_plural = 'elecciones'
