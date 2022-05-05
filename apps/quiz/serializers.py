@@ -50,11 +50,16 @@ class EleccionesSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
       data = {
           "id": instance.id,
-          "respondido": instance.respondido,
-          "usuario_id": instance.usuario.id,
+          "quiz_id": instance.quiz.id,
+          "quiz": instance.quiz.nombre,
+          "pregunta_id": instance.pregunta.id,
+          "pregunta": instance.pregunta.detalle,
+          "respuesta_id": instance.respuesta.id if instance.respuesta is not None else None,
+          "respuesta": instance.respuesta.detalle if instance.respuesta is not None else None,
+          'usuario_id': instance.usuario.id,
           'usuario': instance.usuario.nombre + ' '+ instance.usuario.apellido,
-          "respuesta_id": instance.respuesta.id,
-          "respuesta": instance.respuesta.detalle,
+          'respondido': instance.respondido,
+          'puntaje': instance.puntaje,
       }
       return data
         

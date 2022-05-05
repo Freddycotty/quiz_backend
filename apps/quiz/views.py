@@ -1,5 +1,6 @@
 from venv import create
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from .models import Quiz, Preguntas, Respuestas, Elecciones
 from .serializers import QuizSerializer, PreguntasSerializer, RespuestasSerializer, EleccionesSerializer
 from rest_framework.response import Response
@@ -73,11 +74,10 @@ class RespuestasViewset(viewsets.ModelViewSet):
       return Response(respuesta_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EleccionesViewset(viewsets.ModelViewSet):
-    queryset = Elecciones.objects
-    serializer_class = EleccionesSerializer
+  queryset = Elecciones.objects
+  serializer_class = EleccionesSerializer
 
-
-    def create(self, request):
+  def create(self, request):
       # ACUMULADOR
       acumulador = 0
       for i in self.queryset.filter(quiz_id = request.data['quiz']).values('puntaje',).all():
@@ -87,10 +87,13 @@ class EleccionesViewset(viewsets.ModelViewSet):
       if self.queryset.filter(pregunta_id = request.data['pregunta']).first():
         return Response({'message': 'Esta pregunta ya fue respondida'}, status=status.HTTP_400_BAD_REQUEST)
 
+      # VERIFICACION SI RESPONDE LA ULTIMA PREGUNTA PARA FINALIZAR EL QUIZ
+      preguntal_last = Preguntas.objects.filter(quiz_id = request.data['quiz']).last()
+
       # SI EL USUARIO ENVIO UNA RESPUESTA
       if request.data['respondido']:
         respuesta = Respuestas.objects.filter(id=request.data['respuesta'], pregunta_id =request.data['pregunta'] ).first()
-        
+
         # SI LA RESPUESTA ES VERDADERA
         if respuesta.verdadero:
           valor_pregunta = Preguntas.objects.filter(id = respuesta.pregunta_id).values('valoracion',).first()
@@ -99,6 +102,10 @@ class EleccionesViewset(viewsets.ModelViewSet):
           
           if eleccion_serializer.is_valid():
             eleccion_serializer.save(puntaje = valor_pregunta['valoracion'], usuario = request.user)
+            # ENVIO DE CORREO
+            if preguntal_last.id == request.data['pregunta']:
+              print('enviar correo')
+            
             return Response({
               'message': 'Respuesta correcta', 'puntaje': valor_pregunta['valoracion'], 'puntaje_total': acumulador
             }, status=status.HTTP_201_CREATED)
@@ -110,16 +117,36 @@ class EleccionesViewset(viewsets.ModelViewSet):
           eleccion_serializer = self.serializer_class(data=request.data)
           if eleccion_serializer.is_valid():
             eleccion_serializer.save(puntaje = 0, usuario = request.user)
+            # ENVIO DE CORREO
+            if preguntal_last.id == request.data['pregunta']:
+              print('enviar correo')
+            
             return Response({
               'message': 'UPPPS! Respuesta incorrecta', 'puntaje': 0, 'puntaje_total': acumulador
             }, status=status.HTTP_400_BAD_REQUEST)
+          
           return Response(eleccion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
       # SI EL USUARIO NO PUDO RESPONDER PORQUE SE LE EXCEDIO EL TIEMPO
       eleccion_serializer = self.serializer_class(data=request.data)
       if eleccion_serializer.is_valid():
         eleccion_serializer.save(puntaje = 0, usuario = request.user)
+        # ENVIO DE CORREO
+        if preguntal_last.id == request.data['pregunta']:
+              print('enviar correo')
+        
         return Response({
           'message': 'Se paso el tiempo, no respondiste', 'puntaje': 0, 'puntaje_total': acumulador
         }, status=status.HTTP_400_BAD_REQUEST)
       return Response(eleccion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  #ELIMINAR TODOS LOS REGISTROS DE UN QUIZ PARA VOLVERLO HACER
+  @action(detail=False, methods=['post'])
+  def delete_elecciones(self, request):
+      elecciones = self.queryset.filter(usuario_id = request.data['usuario'], quiz_id = request.data['quiz']).all()
+      if elecciones:
+        for i in elecciones:
+          i.delete()
+        return Response({'message': 'Todos tus registros en el Quiz han sido eliminados'}, status=status.HTTP_200_OK)
+      return Response({
+          'message': 'Hay errores en la información enviada'}, status=status.HTTP_400_BAD_REQUEST)
