@@ -31,6 +31,7 @@ class PreguntasSerializer(serializers.ModelSerializer):
           "detalle": instance.detalle,
           "valoracion": instance.valoracion,
           'tiempo': instance.tiempo,
+          'posicion': instance.posicion,
           'quiz_id': instance.quiz.id,
           'quiz_nombre': instance.quiz.nombre,
       }

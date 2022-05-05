@@ -22,11 +22,12 @@ class Preguntas(models.Model):
   detalle = models.CharField(max_length=250, unique=False, blank=False, null=False)
   valoracion = models.DecimalField(max_digits=10, decimal_places=1,blank=False, null=False)
   tiempo = models.IntegerField(blank=False, null=False)
+  posicion = models.IntegerField(blank=False, null=False)
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='pregunta_quiz', null = False)
   class Meta:
     verbose_name = 'pregunta'
     verbose_name_plural = 'preguntas'
-    ordering = ['-id']
+    ordering = ['-posicion']
     db_table = 'preguntas'
     
     def __str__(self) -> str:
@@ -46,3 +47,16 @@ class Respuestas(models.Model):
   def __str__(self) -> str:
     return str(self.detalle) or ""
 
+class Elecciones(models.Model):
+  usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE,related_name='eleccion_usuario', null = False, blank=False)
+  respuesta = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='eleccion_respuesta', null = True)
+  respondido = models.BooleanField()
+  
+  class Meta:
+    verbose_name = 'eleccion'
+    verbose_name_plural = 'elecciones'
+    ordering = ['-id']
+    db_table = 'elecciones'
+  
+  def __str__(self) -> str:
+    return str(self.respondido) or ""
