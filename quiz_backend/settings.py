@@ -44,6 +44,7 @@ BASE_APPS = [
 
 LOCAL_APPS = [
   'apps.usuario',
+  'apps.quiz',
 ]
 
 THIRD_APPS = [
