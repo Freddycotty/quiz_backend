@@ -10,7 +10,7 @@ class UsuarioTokenSerializer(serializers.ModelSerializer):
 class UsuariosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuarios
-        fields = ['id', 'nombre', 'apellido', 'email', 'is_active']
+        fields = ['id', 'nombre', 'apellido', 'email']
         
 class CrearUsuaroSerializer(serializers.ModelSerializer):
     class Meta:

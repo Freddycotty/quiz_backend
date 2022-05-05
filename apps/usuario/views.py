@@ -22,16 +22,6 @@ class UsuarioViewset(viewsets.ModelViewSet):
   queryset = Usuarios.objects.filter(is_active=True).values('id', 'nombre', 'apellido', 'email')
   serializer_class = UsuariosSerializer
 
-  # PATH
-  def partial_update(self, request, pk=None, *args, **kwargs):
-        kwargs["partial"] = True
-        # Creando variable para manipular el update del objeto ServicioTipo
-        usuario = self.model.objects.filter(id=pk).first()
-        usuario_serializer = UsuariosSerializer(usuario, data=request.data)
-        if usuario_serializer.is_valid():
-          usuario_serializer.save()
-          return Response({'message': 'Usuario actualizado correctamente'}, status=status.HTTP_200_OK)
-        return Response({'message': 'Hay errores en la actualización','errors': usuario_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
   # PUT
   def update(self, request, pk=None):
           usuario = self.model.objects.filter(id=pk).first()
@@ -124,6 +114,7 @@ class Login(ObtainAuthToken):
                             status=status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
+  
 
     def get(self, request, *args, **kwargs):
         try:
