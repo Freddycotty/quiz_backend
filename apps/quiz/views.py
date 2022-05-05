@@ -57,8 +57,13 @@ class RespuestasViewset(viewsets.ModelViewSet):
       
       # CREAR UNA RESPUESTA POR PREGUNTA
       else:
+          # MAXIMO 4 RESPUESTAS POR PREGUNTAS
           if verificacion_respuesta.count() == 4:
             return Response({'message': 'El maximo de respuestas por pregunta son 4'}, status =status.HTTP_400_BAD_REQUEST)
+          
+          # VERIFICANDO QUE SOLO EXISTA UN VERDADERO PARA CADA PREGUNTA
+          elif verificacion_respuesta.filter(verdadero = True) and request.data['verdadero'] == True:
+            return Response({'message': 'Solo puede existir una respuesta verdadera para cada pregunta'}, status =status.HTTP_400_BAD_REQUEST)
           
           respuesta_serializer = self.serializer_class(data = request.data)
           if respuesta_serializer.is_valid():
