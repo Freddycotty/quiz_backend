@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Quiz, Preguntas
+from .models import Quiz, Preguntas, Respuestas
 
 class QuizSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,7 +20,6 @@ class QuizSerializer(serializers.ModelSerializer):
     
 
 class PreguntasSerializer(serializers.ModelSerializer):
-    pregunta_quiz = QuizSerializer(many=True, read_only=True)
     class Meta:
         model = Preguntas
         fields = '__all__'
@@ -37,3 +36,12 @@ class PreguntasSerializer(serializers.ModelSerializer):
       }
       return data
 
+class RespuestasSerializer(serializers.ModelSerializer):
+    pregunta_quiz = QuizSerializer(many=True, read_only=True)
+    class Meta:
+        model = Respuestas
+        fields = '__all__'
+    
+
+    
+ 

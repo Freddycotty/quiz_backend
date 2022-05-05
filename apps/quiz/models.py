@@ -13,6 +13,9 @@ class Quiz(models.Model):
     verbose_name_plural = 'quiz'
     ordering = ['-id']
     db_table = 'quiz'
+    
+    def __str__(self) -> str:
+      return str(self.nombre) or ""
   
 class Preguntas(models.Model):
   nombre = models.CharField(max_length=50, unique=True, blank=False, null=False)
@@ -25,4 +28,21 @@ class Preguntas(models.Model):
     verbose_name_plural = 'preguntas'
     ordering = ['-id']
     db_table = 'preguntas'
+    
+    def __str__(self) -> str:
+      return str(self.nombre) or ""
+    
+class Respuestas(models.Model):
+  detalle = models.CharField(max_length=250, unique=False, blank=False, null=False)
+  verdadero = models.BooleanField()
+  pregunta = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='respuesta_pregunta', null = True)
   
+  class Meta:
+    verbose_name = 'respuesta'
+    verbose_name_plural = 'respuestas'
+    ordering = ['-id']
+    db_table = 'respuestas'
+  
+  def __str__(self) -> str:
+    return str(self.detalle) or ""
+
