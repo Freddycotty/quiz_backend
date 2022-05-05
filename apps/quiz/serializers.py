@@ -1,15 +1,10 @@
 from rest_framework import serializers
-from .models import Quiz
+from .models import Quiz, Preguntas
 
 class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = '__all__'
-        extra_kwargs = {
-        'created_by': {
-        'default': serializers.CurrentUserDefault()      
-        }
-    }
         
     def to_representation(self, instance):
       data = {
@@ -23,3 +18,22 @@ class QuizSerializer(serializers.ModelSerializer):
       }
       return data
     
+
+class PreguntasSerializer(serializers.ModelSerializer):
+    pregunta_quiz = QuizSerializer(many=True, read_only=True)
+    class Meta:
+        model = Preguntas
+        fields = '__all__'
+ 
+    def to_representation(self, instance):
+      data = {
+          "id": instance.id,
+          "nombre": instance.nombre,
+          "detalle": instance.detalle,
+          "valoracion": instance.valoracion,
+          'tiempo': instance.tiempo,
+          'quiz_id': instance.quiz.id,
+          'quiz_nombre': instance.quiz.nombre,
+      }
+      return data
+
