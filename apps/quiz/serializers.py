@@ -63,12 +63,9 @@ class RespuestasSerializer(serializers.ModelSerializer):
 
 class PreguntasSerializer(serializers.ModelSerializer):
     respuesta_pregunta = RespuestasSerializer(many=True, read_only=True)
-    print(respuesta_pregunta)
     class Meta:
         model = Preguntas
         fields = ['id', 'nombre', 'detalle', 'valoracion', 'tiempo', 'posicion', 'quiz', 'respuesta_pregunta']
- 
-
 
     def validate_posicion(self, value):
         posicion = value
