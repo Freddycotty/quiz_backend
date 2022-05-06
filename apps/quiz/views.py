@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from .models import Quiz, Preguntas, Respuestas, Elecciones
 from .serializers import QuizSerializer, PreguntasSerializer, RespuestasSerializer, EleccionesSerializer
 from rest_framework.response import Response
-from ..usuario.tasks import create_email
 
 class QuizViewset(viewsets.ModelViewSet):
     queryset = Quiz.objects

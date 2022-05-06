@@ -64,7 +64,7 @@ class PreguntasSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Preguntas
-        fields = ['id', 'nombre', 'detalle', 'valoracion', 'tiempo', 'posicion', 'quiz','photo', 'respuesta_pregunta']
+        fields = ['id', 'nombre', 'detalle', 'valoracion', 'tiempo', 'posicion', 'quiz','imagen', 'respuesta_pregunta']
 
     def validate_posicion(self, value):
         posicion = value
