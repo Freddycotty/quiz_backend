@@ -54,8 +54,6 @@ class QuizSerializer(serializers.ModelSerializer):
       return data
     
 
-
-
 class RespuestasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Respuestas

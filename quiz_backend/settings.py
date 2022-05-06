@@ -31,6 +31,16 @@ DATABASES = {
     }
 }
 
+#Celery, Celery Beat and Redis settings
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379")
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Caracas'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+
 
 # APPS
 BASE_APPS = [
@@ -50,7 +60,12 @@ LOCAL_APPS = [
 THIRD_APPS = [
   'rest_framework',
   "rest_framework.authtoken",
+
 ]
+
+if CELERY_RESULT_BACKEND == 'django-db':
+    THIRD_APPS += ['django_celery_results',]
+
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS +THIRD_APPS
 
 REST_FRAMEWORK = {
@@ -130,7 +145,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'media')
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -138,3 +155,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'usuario.Usuarios'
 
+# email configuracion
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL")
+DISPLAY_NAME = "Did coding"
+DONOT_REPLY_EMAIL_PASSWORD = os.environ.get("PASSWORD_EMAIL")

@@ -1,7 +1,4 @@
-import urllib, os
 from django.db import models
-from django.core.files import File  # you need this somewhere
-
 from apps.usuario.models import Usuarios
 # Create your models here.
 class Quiz(models.Model):
@@ -26,7 +23,7 @@ class Preguntas(models.Model):
   tiempo = models.IntegerField(blank=False, null=False)
   posicion = models.IntegerField(blank=False, null=False)
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE,related_name='pregunta_quiz', null = False)
-  photo = models.ImageField(upload_to='', blank=True)
+  imagen = models.ImageField(upload_to='', blank=True)
 
   class Meta:
     verbose_name = 'pregunta'

@@ -1,12 +1,10 @@
-from django.core.files import File  # you need this somewhere
-import urllib.request
 from venv import create
-import os
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from .models import Quiz, Preguntas, Respuestas, Elecciones
 from .serializers import QuizSerializer, PreguntasSerializer, RespuestasSerializer, EleccionesSerializer
 from rest_framework.response import Response
+from ..usuario.tasks import create_email
 
 class QuizViewset(viewsets.ModelViewSet):
     queryset = Quiz.objects
@@ -79,8 +77,6 @@ class QuizViewset(viewsets.ModelViewSet):
       return Response({
           'message': 'Hay errores en la información enviada'}, status=status.HTTP_400_BAD_REQUEST)
 
-      
-      
 class PreguntasViewset(viewsets.ModelViewSet):
     queryset = Preguntas.objects.all()
     serializer_class = PreguntasSerializer
@@ -164,10 +160,7 @@ class EleccionesViewset(viewsets.ModelViewSet):
           
           if eleccion_serializer.is_valid():
             eleccion_serializer.save(puntaje = valor_pregunta['valoracion'], usuario = request.user)
-            # ENVIO DE CORREO
-            if pregunta_cantidad == preguntas_respondidas.count():
-              print('enviar correo')
-            
+            # ENVIO DE CORREO)
             return Response({
               'message': 'Respuesta correcta', 'puntaje': valor_pregunta['valoracion'], 'puntaje_total': acumulador, 'preguntas': pregunta_cantidad, 'respondido':preguntas_respondidas.count() 
             }, status=status.HTTP_201_CREATED)
