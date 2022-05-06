@@ -1,4 +1,7 @@
+from django.core.files import File  # you need this somewhere
+import urllib.request
 from venv import create
+import os
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from .models import Quiz, Preguntas, Respuestas, Elecciones
@@ -81,6 +84,7 @@ class QuizViewset(viewsets.ModelViewSet):
 class PreguntasViewset(viewsets.ModelViewSet):
     queryset = Preguntas.objects.all()
     serializer_class = PreguntasSerializer
+    
     
 class RespuestasViewset(viewsets.ModelViewSet):
     queryset = Respuestas.objects.all()
