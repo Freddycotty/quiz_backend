@@ -91,8 +91,8 @@ class EleccionesViewset(viewsets.ModelViewSet):
         return Response({'message': 'Esta pregunta ya fue respondida'}, status=status.HTTP_400_BAD_REQUEST)
 
       # VERIFICACION SI RESPONDE LA ULTIMA PREGUNTA PARA FINALIZAR EL QUIZ
-      preguntal_last = Preguntas.objects.filter(quiz_id = request.data['quiz']).last()
-      
+      pregunta_cantidad = Preguntas.objects.filter(quiz_id = request.data['quiz']).count()
+      preguntas_respondidas = Elecciones.objects.filter(quiz_id = request.data['quiz'])
 
       # SI EL USUARIO ENVIO UNA RESPUESTA
       if request.data['respondido']:
@@ -107,11 +107,11 @@ class EleccionesViewset(viewsets.ModelViewSet):
           if eleccion_serializer.is_valid():
             eleccion_serializer.save(puntaje = valor_pregunta['valoracion'], usuario = request.user)
             # ENVIO DE CORREO
-            if preguntal_last.id == request.data['pregunta']:
+            if pregunta_cantidad == preguntas_respondidas.count():
               print('enviar correo')
             
             return Response({
-              'message': 'Respuesta correcta', 'puntaje': valor_pregunta['valoracion'], 'puntaje_total': acumulador
+              'message': 'Respuesta correcta', 'puntaje': valor_pregunta['valoracion'], 'puntaje_total': acumulador, 'preguntas': pregunta_cantidad, 'respondido':preguntas_respondidas.count() 
             }, status=status.HTTP_201_CREATED)
           
           return Response(eleccion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -122,11 +122,11 @@ class EleccionesViewset(viewsets.ModelViewSet):
           if eleccion_serializer.is_valid():
             eleccion_serializer.save(puntaje = 0, usuario = request.user)
             # ENVIO DE CORREO
-            if preguntal_last.id == request.data['pregunta']:
+            if pregunta_cantidad == preguntas_respondidas.count():
               print('enviar correo')
             
             return Response({
-              'message': 'UPPPS! Respuesta incorrecta', 'puntaje': 0, 'puntaje_total': acumulador
+              'message': 'UPPPS! Respuesta incorrecta', 'puntaje': 0, 'puntaje_total': acumulador, 'preguntas': pregunta_cantidad, 'respondido':preguntas_respondidas.count() 
             }, status=status.HTTP_400_BAD_REQUEST)
           
           return Response(eleccion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -136,11 +136,11 @@ class EleccionesViewset(viewsets.ModelViewSet):
       if eleccion_serializer.is_valid():
         eleccion_serializer.save(puntaje = 0, usuario = request.user)
         # ENVIO DE CORREO
-        if preguntal_last.id == request.data['pregunta']:
+        if pregunta_cantidad == preguntas_respondidas.count():
               print('enviar correo')
         
         return Response({
-          'message': 'Se paso el tiempo, no respondiste', 'puntaje': 0, 'puntaje_total': acumulador
+          'message': 'Se paso el tiempo, no respondiste', 'puntaje': 0, 'puntaje_total': acumulador, 'preguntas': pregunta_cantidad, 'respondido':preguntas_respondidas.count() 
         }, status=status.HTTP_400_BAD_REQUEST)
       return Response(eleccion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
