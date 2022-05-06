@@ -92,6 +92,7 @@ class EleccionesViewset(viewsets.ModelViewSet):
 
       # VERIFICACION SI RESPONDE LA ULTIMA PREGUNTA PARA FINALIZAR EL QUIZ
       preguntal_last = Preguntas.objects.filter(quiz_id = request.data['quiz']).last()
+      
 
       # SI EL USUARIO ENVIO UNA RESPUESTA
       if request.data['respondido']:

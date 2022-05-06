@@ -54,28 +54,30 @@ class QuizSerializer(serializers.ModelSerializer):
       return data
     
 
-class PreguntasSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Preguntas
-        fields = '__all__'
- 
-    def to_representation(self, instance):
-      data = {
-          "id": instance.id,
-          "nombre": instance.nombre,
-          "detalle": instance.detalle,
-          "valoracion": instance.valoracion,
-          'tiempo': instance.tiempo,
-          'posicion': instance.posicion,
-          'quiz_id': instance.quiz.id,
-          'quiz_nombre': instance.quiz.nombre,
-      }
-      return data
+
 
 class RespuestasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Respuestas
         fields = '__all__'
+
+class PreguntasSerializer(serializers.ModelSerializer):
+    respuesta_pregunta = RespuestasSerializer(many=True, read_only=True)
+    print(respuesta_pregunta)
+    class Meta:
+        model = Preguntas
+        fields = ['id', 'nombre', 'detalle', 'valoracion', 'tiempo', 'posicion', 'quiz', 'respuesta_pregunta']
+ 
+
+
+    def validate_posicion(self, value):
+        posicion = value
+        quiz = self.context['request'].data['quiz']
+        pregunta = Preguntas.objects.filter(posicion = posicion, quiz_id =quiz ).first()
+        if pregunta:
+           raise serializers.ValidationError(
+                "Esta posicion ya esta escogida en una pregunta!.")
+        return value
 
 class EleccionesSerializer(serializers.ModelSerializer):
     class Meta:

@@ -17,8 +17,8 @@ class Quiz(models.Model):
       return str(self.nombre) or ""
   
 class Preguntas(models.Model):
-  nombre = models.CharField(max_length=50, unique=True, blank=False, null=False)
-  detalle = models.CharField(max_length=250, unique=False, blank=False, null=False)
+  nombre = models.CharField(max_length=50, blank=False, null=False)
+  detalle = models.CharField(max_length=250, blank=False, null=False)
   valoracion = models.DecimalField(max_digits=10, decimal_places=1,blank=False, null=False)
   tiempo = models.IntegerField(blank=False, null=False)
   posicion = models.IntegerField(blank=False, null=False)
