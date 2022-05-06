@@ -21,6 +21,60 @@ class QuizViewset(viewsets.ModelViewSet):
           'errors': quiz_serializer.errors
       }, status=status.HTTP_400_BAD_REQUEST)
       
+    @action(detail=False, methods=['get'])
+    def usuarios(self, request):
+      puntaje_quiz = 0
+      puntaje_usuario = 0
+      respuestas_verdaderas = 0
+      respuestas_sin_tiempo = 0
+      quiz = request.GET['quiz']
+      
+      if quiz:
+        elecciones = Elecciones.objects.filter(quiz_id = quiz)
+        pregunta = Preguntas.objects.filter(quiz_id = quiz)
+        quiz = Quiz.objects.filter(id = quiz).first()
+
+        if request.user.id != quiz.created_by_id:
+          elecciones = elecciones.filter(usuario_id = request.user.id)
+
+        data = {
+                'usuario_id':'', 
+                'usuario': '',
+                'quiz': '',
+                'puntaje_quiz': '',
+                'preguntas': pregunta.count(),
+                'preguntas_respondida': elecciones.count(),
+                'respuestas_verdaderas': respuestas_verdaderas,
+                'respuestas_sin_tiempo': respuestas_sin_tiempo,
+                'puntaje_usuario': puntaje_usuario,
+                }
+        
+        for i in elecciones.all():
+          data['usuario_id']  = i.usuario.id
+          data['usuario']  = i.usuario.nombre + ' ' + i.usuario.apellido
+          data['quiz']  = i.quiz.nombre
+          
+          if i.respuesta is not None:
+          
+            if i.respuesta.verdadero:
+              respuestas_verdaderas= respuestas_verdaderas + 1
+          
+          else:
+            respuestas_sin_tiempo = respuestas_sin_tiempo + 1
+          puntaje_usuario = puntaje_usuario+ i.pregunta.valoracion
+        
+        for i in pregunta.all():
+          puntaje_quiz = puntaje_quiz+ i.valoracion
+          
+        data['puntaje_usuario'] = puntaje_usuario
+        data['puntaje_quiz'] = puntaje_quiz
+        data['respuestas_verdaderas'] = respuestas_verdaderas
+        data['respuestas_sin_tiempo'] = respuestas_sin_tiempo
+        
+        return Response(data, status=status.HTTP_200_OK)
+      
+      return Response({
+          'message': 'Hay errores en la información enviada'}, status=status.HTTP_400_BAD_REQUEST)
 
       
       
@@ -87,7 +141,7 @@ class EleccionesViewset(viewsets.ModelViewSet):
         acumulador =+ i['puntaje']
       
       # VERIFICACION PARA SABER SI EL USUARIO YA RESPONDIO LA PREGUNTA
-      if self.queryset.filter(pregunta_id = request.data['pregunta']).first():
+      if self.queryset.filter(pregunta_id = request.data['pregunta'], usuario_id = request.user.id).first():
         return Response({'message': 'Esta pregunta ya fue respondida'}, status=status.HTTP_400_BAD_REQUEST)
 
       # VERIFICACION SI RESPONDE LA ULTIMA PREGUNTA PARA FINALIZAR EL QUIZ
