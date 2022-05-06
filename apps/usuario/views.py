@@ -10,12 +10,10 @@ from rest_framework.authtoken.models import Token
 
 # DJANGO
 from django.contrib.sessions.models import Session
-from django.shortcuts import get_object_or_404
 
 #PROYECTO 
 from .models import Usuarios
 from .serializers import  UsuarioTokenSerializer, UsuariosSerializer, CrearUsuaroSerializer, PasswordSerializer
-
 
 class UsuarioViewset(viewsets.ModelViewSet):
   model = Usuarios

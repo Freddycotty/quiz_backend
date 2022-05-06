@@ -1,6 +1,8 @@
 from venv import create
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from .models import Quiz, Preguntas, Respuestas, Elecciones
 from .serializers import QuizSerializer, PreguntasSerializer, RespuestasSerializer, EleccionesSerializer
 from rest_framework.response import Response
@@ -8,6 +10,8 @@ from rest_framework.response import Response
 class QuizViewset(viewsets.ModelViewSet):
     queryset = Quiz.objects
     serializer_class = QuizSerializer
+    permission_classes = (IsAuthenticated,) 
+    authentication_classes = (TokenAuthentication,) 
 
     def create(self, request):
       quiz_serializer = self.serializer_class(data=request.data)
@@ -79,11 +83,13 @@ class QuizViewset(viewsets.ModelViewSet):
 class PreguntasViewset(viewsets.ModelViewSet):
     queryset = Preguntas.objects.all()
     serializer_class = PreguntasSerializer
+    authentication_classes = (TokenAuthentication,) 
     
     
 class RespuestasViewset(viewsets.ModelViewSet):
     queryset = Respuestas.objects.all()
     serializer_class = RespuestasSerializer
+    authentication_classes = (TokenAuthentication,) 
     
     def create(self, request):
       # EL CAMPO PREGUNTA DEBE ENVIARSE OBLIGATORIAMENTE
@@ -132,6 +138,7 @@ class RespuestasViewset(viewsets.ModelViewSet):
 class EleccionesViewset(viewsets.ModelViewSet):
   queryset = Elecciones.objects
   serializer_class = EleccionesSerializer
+  authentication_classes = (TokenAuthentication,) 
 
   def create(self, request):
       # ACUMULADOR
