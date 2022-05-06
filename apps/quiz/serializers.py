@@ -7,6 +7,9 @@ class QuizSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
     def to_representation(self, instance):
+      acumulador = 0
+      pregunta_cantidad = 0
+      tiempo_limite = 0
       data = {
           "id": instance.id,
           "nombre": instance.nombre,
@@ -15,7 +18,39 @@ class QuizSerializer(serializers.ModelSerializer):
           'created_at': str(instance.created_at)[0:19],
           'created_by_id': instance.created_by.id,
           'created_by': instance.created_by.nombre + ' '+ instance.created_by.apellido,
+          'puntuacion_quiz': {},
+          'pregunta_cantidad': {},
+          'tiempo_limite': {},
+          'pregunta': [],
+          
       }
+      for i in instance.pregunta_quiz.all():
+        data['pregunta'].append(
+          {
+            'id': i.id,
+            'nombre': i.nombre,
+            'detalle': i.detalle,
+            'valoracion': i.valoracion,
+            'tiempo': i.tiempo,
+            'posicion': i.posicion,
+            'respuesta': []
+          }
+        )
+        acumulador = acumulador+ i.valoracion
+        pregunta_cantidad = pregunta_cantidad + 1
+        tiempo_limite = tiempo_limite + i.tiempo
+        for pregunta_quiz in data['pregunta']:
+          for j in i.respuesta_pregunta.filter(pregunta_id = pregunta_quiz['id']):
+            pregunta_quiz['respuesta'].append(
+              {
+                'id': j.id,
+                'detalle': j.detalle,
+                'verdadero': j.verdadero
+              }
+            )
+      data['puntuacion_quiz'] = acumulador
+      data['pregunta_cantidad'] = pregunta_cantidad
+      data['tiempo_limite'] = tiempo_limite
       return data
     
 

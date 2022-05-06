@@ -6,7 +6,7 @@ from .serializers import QuizSerializer, PreguntasSerializer, RespuestasSerializ
 from rest_framework.response import Response
 
 class QuizViewset(viewsets.ModelViewSet):
-    queryset = Quiz.objects.all()
+    queryset = Quiz.objects
     serializer_class = QuizSerializer
 
     def create(self, request):
@@ -20,6 +20,9 @@ class QuizViewset(viewsets.ModelViewSet):
           'message': 'Error al momento de registral el Quiz',
           'errors': quiz_serializer.errors
       }, status=status.HTTP_400_BAD_REQUEST)
+      
+
+      
       
 class PreguntasViewset(viewsets.ModelViewSet):
     queryset = Preguntas.objects.all()
