@@ -60,6 +60,7 @@ LOCAL_APPS = [
 THIRD_APPS = [
   'rest_framework',
   'rest_framework.authtoken',
+  'django_celery_beat',
 ]
 
 if CELERY_RESULT_BACKEND == 'django-db':
