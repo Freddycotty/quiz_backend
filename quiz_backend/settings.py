@@ -59,8 +59,7 @@ LOCAL_APPS = [
 
 THIRD_APPS = [
   'rest_framework',
-  "rest_framework.authtoken",
-
+  'rest_framework.authtoken',
 ]
 
 if CELERY_RESULT_BACKEND == 'django-db':
@@ -156,8 +155,8 @@ AUTH_USER_MODEL = 'usuario.Usuarios'
 # email configuracion
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ.get("EMAIL")
+EMAIL_HOST_PASSWORD = os.environ.get("PASSWORD_EMAIL")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL")
-DISPLAY_NAME = "Did coding"
-DONOT_REPLY_EMAIL_PASSWORD = os.environ.get("PASSWORD_EMAIL")
+DEFAULT_FROM_EMAIL = os.environ.get("EMAIL")
