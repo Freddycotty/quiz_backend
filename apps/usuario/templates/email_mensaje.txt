@@ -1,0 +1,3 @@
+Hola {{nombre|safe}}
+Te has resistrado correctamente en quiz_backend
+Gracias!

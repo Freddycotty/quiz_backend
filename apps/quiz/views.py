@@ -84,8 +84,7 @@ class PreguntasViewset(viewsets.ModelViewSet):
     queryset = Preguntas.objects.all()
     serializer_class = PreguntasSerializer
     authentication_classes = (TokenAuthentication,) 
-    
-    
+
 class RespuestasViewset(viewsets.ModelViewSet):
     queryset = Respuestas.objects.all()
     serializer_class = RespuestasSerializer

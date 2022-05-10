@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from .tasks import email_registro
 
 # DJANGO
 from django.contrib.sessions.models import Session
@@ -38,6 +39,7 @@ class UsuarioViewset(viewsets.ModelViewSet):
       usuario_serializer = CrearUsuaroSerializer(data=request.data)
       if usuario_serializer.is_valid():
           usuario_serializer.save()
+          email_registro.delay('freddy', 'freddycarrillo1912@gmail.com')
           return Response({
               'message': 'Usuario registrado correctamente.'
           }, status=status.HTTP_201_CREATED)
